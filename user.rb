@@ -1,3 +1,6 @@
+# Определили класс User
+# По заданию имеет деньги = 100, колоду карт, имя, очки.
+
 class User
   attr_accessor :money, :points, :cards, :name
 
@@ -7,7 +10,8 @@ class User
     @cards = []
     @points = 0
   end
-
+# Берем 3 рандомные карты и удаляем их из колоды
+# Подсчитываем очки (см. метод score)
   def take_card(deck)
     if @cards.count < 3
       random_card = deck.cards.sample
@@ -19,6 +23,7 @@ class User
     end
   end
 
+# Метод подсчета очков
   def score
     @points = 0
     have_a = false

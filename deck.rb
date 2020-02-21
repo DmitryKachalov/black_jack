@@ -1,6 +1,5 @@
 # Определили Колоду
 # Метод generate складывает в массив колоды массивы карт
-
 require_relative 'card.rb'
 
 class Deck

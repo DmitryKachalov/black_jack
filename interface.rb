@@ -1,87 +1,55 @@
-require_relative 'game.rb'
+require_relative 'black_jack.rb'
+require_relative 'rules'
 
 class Interface
-
-  def initialize
-    @game = Game.new(introduction)
-    start_game
-  end
+  include Rules
 
   def introduction
     print "Введите имя: "
     gets.chomp
   end
 
-  def start_game
-    puts "Здравствуйте #{@game.player.name}! У вас #{@game.player.money} фишек"
+  def show_money(player)
+    puts "#{player[:name]}, у вас #{player[:amount]} фишек"
   end
 
-  def play
-    loop do
-      puts "Делайте ставку!"
-      begin
-        @game.set_money(gets.chomp.to_i)
-      rescue => e
-        puts e.message
-        retry
-      end
-      puts "Ставка #{@game.ante} принята! В банке #{@game.bank.money} фишек"
-      @game.start
-      puts "Карты диллера: #{@game.dealer.cards.first.name} **"
-      print "Ваши карты: "
-      @game.player.cards.each do |card|
-        print "#{card.name} "
-      end
-      print "Очки: #{@game.player.points}\n"
-
-      step_two
-      step_three
-      break if @game.player.has_money? || @game.dealer.has_money?
-    end
-
-    if @game.player.has_money?
-      puts "У вас закончились фишки"
-    elsif @game.dealer.has_money?
-      puts "У диллера закончились фишки"
+  def show_cards(players)
+    players.each do |player|
+      cards = player[:cards].map(&:name)
+      message = player[:name].empty? ? 'Карты крупье:' : "Ваши карты, #{player[:name]}:"
+      puts "#{message} #{cards.join(', ')}"
     end
   end
 
-  def step_two
-    puts "1# Взять ещё карту? 2# Пас 3# Вскрыть карты"
-    action = gets.chomp.to_i
-    @game.take_again(@game.player) if action == 1
-    @game.take_again_dealer if action != 3
-    puts "Диллер взял карту" if @game.dealer.max_cards?
-
-    print "Карты диллера: "
-    @game.dealer.cards.each do |card|
-      print "#{card.name} "
-    end
-    print "Очки: #{@game.dealer.points}\n"
-    print "Ваши карты: "
-    @game.player.cards.each do |card|
-      print "#{card.name} "
-    end
-    print "Очки: #{@game.player.points}\n"
+  def take_card?
+    puts 'Берем карту?([Д]а\[Y]es\[н]ет\[n]o)'
+    answer = gets.chomp
+    return true if answer == '' || answer.match?(/[дy]|да|yes/i)
+    false
   end
 
-  def step_three
-    @game.who_winner
+  def show_winner(winner)
+    case winner
+    when DEALER then puts 'В этот раз победили не вы'
+    when ANTE then puts 'Ничья'
+    else puts "#{winner}, поздравляю вы победили в этом раунде"
+    end
+  end
 
-    if @game.winner == @game.player
-      puts "Вы выйграли +#{@game.bank.money}"
-    elsif @game.winner == @game.dealer
-      puts "Вы проиграли -#{@game.bank.money}"
+  def continue?(winner)
+    if winner
+      puts 'Продолжаем игру? ([Д]а\[Y]es\[н]ет\[n]o)'
+      answer = gets.chomp
+      return true if answer == '' || answer.match?(/[дy]|да|yes/i)
+    end
+    false
+  end
+
+  def show_absolute_winner(winner)
+    if winner == DEALER
+      puts 'Вы проиграли игра закончена'
     else
-      puts "Ничья! Возврат фишек"
+      puts 'Игра закончена'
     end
-
-    @game.pay_money
-
-    puts "Фишки диллера: #{@game.dealer.money}"
-    puts "Ваши фишки: #{@game.player.money}"
-
-    @game.clear_round
   end
-
 end

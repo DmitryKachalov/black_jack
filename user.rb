@@ -1,50 +1,56 @@
-# Определили класс User
-# По заданию имеет деньги = 100, колоду карт, имя, очки.
+require_relative 'hand'
+require_relative 'bank'
+require_relative 'rules'
 
 class User
-  attr_accessor :money, :points, :cards, :name
+  include Rules
+  attr_accessor :name, :bank
 
   def initialize(name = '')
+    @hand = Hand.new
+    @bank = Bank.new(START_MONEY)
     @name = name
-    @money = 100
-    @cards = []
-    @points = 0
   end
-# Берем 3 рандомные карты и удаляем их из колоды
-# Подсчитываем очки (см. метод score)
+
+  def clear_round
+    @hand.cards.clear
+    @hand.points = 0
+  end
+
+  def cards?
+    @hand.cards.empty?
+  end
+
+  def cards
+    @hand.cards
+  end
+
   def take_card(deck)
-    if @cards.count < 3
-      random_card = deck.cards.sample
-      @cards << random_card
-      deck.cards.delete(random_card)
-      score
-    else
-      raise "This user already have 3 cards"
-    end
+    @hand.take_card(deck)
   end
 
-# Метод подсчета очков
-  def score
-    @points = 0
-    have_a = false
-    @cards.each do |card|
-      if %w[J Q K].include?(card.value)
-        @points += 10
-      elsif card.value == 'A'
-        @points += 11
-        have_a = true
-      else
-        @points += card.value.to_i
-      end
-    end
-    @points -= 10 if @points > 21 && have_a
+  def points
+    @hand.points
   end
 
-  def has_money?
-    money <= 0
+  def money
+    @bank.money
   end
 
-  def max_cards?
-    @cards.count == 3
+  def money?
+    @bank.money?
+  end
+
+  # Кошелек юзера достаем из него деньги
+  def bet
+    @bank.make_bets(@player, @dealer)
+  end
+  
+  def withdraw(money)
+    @bank.money -= money
+  end
+  #  Кладем деньги в кошеле юзера
+  def get_money(money)
+    @bank.get_money(money)
   end
 end

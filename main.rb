@@ -26,8 +26,11 @@ class Main
     @interface.show_winner(@blackjack.winner)
     @interface.show_money(@blackjack.pay_money)
     @absolute_winner = @blackjack.absolute_winner
-    play if @interface.continue?(!@absolute_winner)
-    finish
+    if @interface.continue?(!@absolute_winner)
+      play
+    else
+      finish
+    end
   end
 
   def finish

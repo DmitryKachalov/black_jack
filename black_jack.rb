@@ -68,9 +68,9 @@ class BlackJack
 
   def absolute_winner
     if @player.money? && !@dealer.money?
-      @player.name
-    elsif !@player.money? && @dealer.money?
       DEALER
+    elsif !@player.money? && @dealer.money?
+      @player.name
     end
   end
 end

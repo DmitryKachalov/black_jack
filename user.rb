@@ -45,7 +45,7 @@ class User
   def bet
     @bank.make_bets(@player, @dealer)
   end
-  
+
   def withdraw(money)
     @bank.money -= money
   end

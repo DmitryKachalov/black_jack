@@ -49,7 +49,7 @@ class Interface
     if winner == DEALER
       puts 'Вы проиграли игра закончена'
     else
-      puts 'Игра закончена'
+      puts "Вы выиграли #{winner.name} игра закончена"
     end
   end
 end
